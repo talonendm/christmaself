@@ -1,5 +1,7 @@
 var clicks = 0;
 var timerValue = 0;
+var value = 0;
+var endclicks = 0;
 
 function setup() { 
   createCanvas(windowWidth, windowHeight);
@@ -9,7 +11,7 @@ function setup() {
 } 
 
 function draw() { 
-  background(0,10,10);
+  background(value,10,10);
   rectMode(CENTER);
 	fill(200,60,90);
   rect(width*0.5, height*0.5, 280, 72,7);
@@ -18,7 +20,8 @@ function draw() {
 	textAlign(CENTER,CENTER);
 	textFont('Avenir');
 	let permin = round(clicks * 600 / timerValue);
-	text('click: ' + clicks + "TIME" + nfc(timerValue / 10,1) + "perMin:" + permin, width*0.5,height*0.5+2);
+	text('click: ' + clicks + "TIME" + nfc(timerValue / 10,1) + "\nperMin:" + permin, width*0.5,height*0.5+2);
+	text('end: ' + endclicks, width*0.5,height*0.8+2);
 }
 
 
@@ -30,8 +33,14 @@ function touchStarted () {
   }
   
   clicks = clicks + 1;
-  
+  value = 0;
 }
+
+function touchEnded() { 
+    value = 50; 
+	endclicks = endclicks + 1;
+} 
+
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
