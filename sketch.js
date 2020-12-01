@@ -31,19 +31,14 @@ function draw() {
 	text('end: ' + endclicks, width*0.5,height*0.8+2);
 }
 
-
+// TOUCH ------------------------------------------------------------
 // full screen: https://editor.p5js.org/slow_izzm/sketches/lgzf4tJk6
 function touchStarted () {
   let fs = fullscreen();
   if (!fs) {
     fullscreen(true);
   }
-  
-  
   value = 0;
-  
-  
-  
   if (ptimer == timerValue) {
 	  // double
 	  doublec = doublec + 1; //# // within selected time 0.1sec
@@ -52,8 +47,6 @@ function touchStarted () {
   }
   // https://stackoverflow.com/questions/51144762/p5-js-mousepressed-works-but-doublepressed-doesnot
   ptimer = timerValue;
-  
-  
   if(!clicked){ //# https://stackoverflow.com/questions/51144762/p5-js-mousepressed-works-but-doublepressed-doesnot
     clicked=true;
     setTimeout(function(){
@@ -70,18 +63,22 @@ function touchStarted () {
     //double click Stuff
 	doublec2 = doublec2 + 1;
   }
-  
-  
-  
-  
-  
 }
 
 function touchEnded() { 
     value = 50; 
-	endclicks = endclicks + 1;
-} 
+	// Clean code and post answer here: https://github.com/processing/p5.js/issues/1815
 
+	// without this double clicks:
+	if(event.type!='mouseup'){ // nicolasbaez commented 20 days ago at https://github.com/processing/p5.js/issues/1815
+		//your code :)
+		
+		endclicks = endclicks + 1;
+	}
+	
+	
+} 
+// TOUCH MOVED ------------------------------------------------------
 function touchMoved() {
 	movec = movec + 1;
 }
