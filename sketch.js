@@ -1,21 +1,24 @@
 var clicks = 0;
+var timerValue = 0;
 
 function setup() { 
   createCanvas(windowWidth, windowHeight);
 	colorMode(HSB,360,100,100);
 	rectMode(CENTER);
+	setInterval(timeIt, 100); // https://editor.p5js.org/denaplesk2/sketches/ryIBFP_lG
 } 
 
 function draw() { 
   background(0,10,10);
   rectMode(CENTER);
 	fill(200,60,90);
-  rect(width*0.5, height*0.5, 80, 42,7);
+  rect(width*0.5, height*0.5, 280, 72,7);
 	fill(0,0,100);
 	textSize(27);
 	textAlign(CENTER,CENTER);
 	textFont('Avenir');
-	text('click: ' + clicks,width*0.5,height*0.5+2);
+	let permin = round(clicks * 600 / timerValue);
+	text('click: ' + clicks + "TIME" + nfc(timerValue / 10,1) + "perMin:" + permin, width*0.5,height*0.5+2);
 }
 
 
@@ -33,7 +36,11 @@ function touchStarted () {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
-
+function timeIt() {
+  
+    timerValue++;
+  
+}
 /* prevents the mobile browser from processing some default
  * touch events, like swiping left for "back" or scrolling
  * the page.
