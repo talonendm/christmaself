@@ -46,7 +46,7 @@ function touchStarted () {
   
   if (ptimer == timerValue) {
 	  // double
-	  doublec = doublec + 1; # // within selected time 0.1sec
+	  doublec = doublec + 1; //# // within selected time 0.1sec
   } else {
 	  clicks = clicks + 1;
   }
