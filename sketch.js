@@ -2,6 +2,8 @@ var clicks = 0;
 var timerValue = 0;
 var value = 0;
 var endclicks = 0;
+var doublec = 0;
+var movec = 0;
 
 function setup() { 
   createCanvas(windowWidth, windowHeight);
@@ -21,6 +23,8 @@ function draw() {
 	textFont('Avenir');
 	let permin = round(clicks * 600 / timerValue);
 	text('click: ' + clicks + "TIME" + nfc(timerValue / 10,1) + "\nperMin:" + permin, width*0.5,height*0.5+2);
+	text('touch move: ' + movec, width*0.5,height*0.35+2);
+	text('double: ' + doublec, width*0.5,height*0.65+2);
 	text('end: ' + endclicks, width*0.5,height*0.8+2);
 }
 
@@ -40,6 +44,20 @@ function touchEnded() {
     value = 50; 
 	endclicks = endclicks + 1;
 } 
+
+function touchMoved() {
+	movec = movec + 1;
+}
+
+// this function fires with any double click anywhere
+function doubleClicked() {
+	doublec = doublec + 1;
+}
+
+
+
+
+
 
 
 function windowResized() {
