@@ -1,3 +1,5 @@
+var clicks = 0;
+
 function setup() { 
   createCanvas(windowWidth, windowHeight);
 	colorMode(HSB,360,100,100);
@@ -13,7 +15,7 @@ function draw() {
 	textSize(27);
 	textAlign(CENTER,CENTER);
 	textFont('Avenir');
-	text('click',width*0.5,height*0.5+2);
+	text('click: ' + clicks,width*0.5,height*0.5+2);
 }
 
 
@@ -23,6 +25,9 @@ function touchStarted () {
   if (!fs) {
     fullscreen(true);
   }
+  
+  clicks = clicks + 1;
+  
 }
 
 function windowResized() {
