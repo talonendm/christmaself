@@ -41,6 +41,7 @@ function draw() {
 	
 	// https://js6450.github.io/sound-p5-part1.html
 	var level = mic.getLevel();
+	fill(255);
     ellipse(width / 2, height / 2, level * 500, level * 500)
 }
 
