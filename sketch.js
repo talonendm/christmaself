@@ -48,17 +48,17 @@ function draw() {
 	}
 	
 	if (getAudioContext().state == 'running') {
-	//ncaught TypeError: Cannot read property '0' of undefined
-    //at RingBuffer.push (9a14b93c-e7ee-48d7-83a9-b9af475ae11f:81)
-    //at AudioWorkletProcessor.process (9a14b93c-e7ee-48d7-83a9-b9af47
+		//ncaught TypeError: Cannot read property '0' of undefined
+		//at RingBuffer.push (9a14b93c-e7ee-48d7-83a9-b9af475ae11f:81)
+		//at AudioWorkletProcessor.process (9a14b93c-e7ee-48d7-83a9-b9af47
 	
-	// https://js6450.github.io/sound-p5-part1.html
-	var level = mic.getLevel();
-	fill(255,0,0,140);
-	if (soundrestarted>0) {
-		fill(0,255,0,140);
-	}
-    ellipse(width / 2, height / 2, level * 5000, level * 5000)
+		// https://js6450.github.io/sound-p5-part1.html
+		var level = mic.getLevel();
+		fill(255,0,0,140);
+		if (soundrestarted>0) {
+			fill(0,255,0,140);
+		}
+		ellipse(width / 2, height / 2, level * 5000, level * 5000)
 	
 	
 	}
