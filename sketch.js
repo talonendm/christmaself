@@ -104,7 +104,17 @@ function touchMoved() {
 
 
 
-
+// ....................................................................
+// Errors messages (CTRL SHIFT i) Chrome Developer Tools:
+// The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu
+// DevTools failed to load SourceMap: Could not load content for https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js.map: HTTP error: status code 404, net::ERR_HTTP_RESPONSE_CODE_FAILURE
+function touchStarted() {
+  if (getAudioContext().state !== 'running') {
+    getAudioContext().resume();
+	mic = new p5.AudioIn();
+    mic.start();
+  }
+}
 
 
 
