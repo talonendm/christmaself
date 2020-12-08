@@ -8,6 +8,7 @@ var ptimer;
 var clicked=false, clickTimeout=300;
 var clicks2 = 0;
 var doublec2 = 0;
+var soundrestarted = 0;
 
 var mic;
 
@@ -41,8 +42,11 @@ function draw() {
 	
 	// https://js6450.github.io/sound-p5-part1.html
 	var level = mic.getLevel();
-	fill(255);
-    ellipse(width / 2, height / 2, level * 500, level * 500)
+	fill(255,0,0,140);
+	if (soundrestarted>0) {
+		fill(0,255,0,140);
+	}
+    ellipse(width / 2, height / 2, level * 5000, level * 5000)
 }
 
 // TOUCH ------------------------------------------------------------
@@ -113,6 +117,7 @@ function touchStarted() {
     getAudioContext().resume();
 	mic = new p5.AudioIn();
     mic.start();
+	soundrestarted = soundrestarted + 1;
   }
 }
 
