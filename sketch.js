@@ -40,6 +40,13 @@ function draw() {
 	text('double: ' + doublec + " or " + doublec2, width*0.5,height*0.65+2);
 	text('end: ' + endclicks, width*0.5,height*0.8+2);
 	
+	if (getAudioContext().state !== 'running') {
+		getAudioContext().resume();
+		mic = new p5.AudioIn();
+		mic.start();
+		soundrestarted = soundrestarted + 1;
+	}
+	
 	// https://js6450.github.io/sound-p5-part1.html
 	var level = mic.getLevel();
 	fill(255,0,0,140);
