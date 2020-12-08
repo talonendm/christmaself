@@ -8,11 +8,20 @@ var ptimer;
 var clicked=false, clickTimeout=300;
 var clicks2 = 0;
 var doublec2 = 0;
+
+var mic;
+
 function setup() { 
   createCanvas(windowWidth, windowHeight);
 	colorMode(HSB,360,100,100);
 	rectMode(CENTER);
 	setInterval(timeIt, 100); // https://editor.p5js.org/denaplesk2/sketches/ryIBFP_lG
+	
+	mic = new p5.AudioIn();
+    mic.start();
+
+    noStroke();
+	
 } 
 
 function draw() { 
@@ -29,6 +38,10 @@ function draw() {
 	text('touch move: ' + movec, width*0.5,height*0.35+2);
 	text('double: ' + doublec + " or " + doublec2, width*0.5,height*0.65+2);
 	text('end: ' + endclicks, width*0.5,height*0.8+2);
+	
+	// https://js6450.github.io/sound-p5-part1.html
+	var level = mic.getLevel();
+    ellipse(width / 2, height / 2, level * 500, level * 500)
 }
 
 // TOUCH ------------------------------------------------------------
