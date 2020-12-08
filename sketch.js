@@ -47,6 +47,11 @@ function draw() {
 		soundrestarted = soundrestarted + 1;
 	}
 	
+	if (getAudioContext().state == 'running') {
+	//ncaught TypeError: Cannot read property '0' of undefined
+    //at RingBuffer.push (9a14b93c-e7ee-48d7-83a9-b9af475ae11f:81)
+    //at AudioWorkletProcessor.process (9a14b93c-e7ee-48d7-83a9-b9af47
+	
 	// https://js6450.github.io/sound-p5-part1.html
 	var level = mic.getLevel();
 	fill(255,0,0,140);
@@ -54,6 +59,11 @@ function draw() {
 		fill(0,255,0,140);
 	}
     ellipse(width / 2, height / 2, level * 5000, level * 5000)
+	
+	
+	}
+	text('level: ' + level, width*0.2,height*0.7+2);
+	
 }
 
 // TOUCH ------------------------------------------------------------
