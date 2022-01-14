@@ -190,8 +190,9 @@ function touchStarted() {
 
 
 function centerCanvas() {
-	var x = (windowWidth - width) / 2;
-	var y = (windowHeight - height) / 2;
+	// var x = (windowWidth - width) / 2;
+	// var y = (windowHeight - height) / 2;
+	resizeCanvas(windowWidth, windowHeight);
 	// cnv.position(x, y);
 	cnv.position(0, 0);
 	cnv.style('z-index', '-1'); // https://www.youtube.com/watch?v=OIfEHD3KqCg
@@ -203,6 +204,13 @@ function windowResized() {
 	// https://github.com/processing/p5.js/wiki/Positioning-your-canvas
 	centerCanvas();
 }
+
+
+function keyPressed(){
+	text("here", random(width), random(height));
+	// https://stackoverflow.com/questions/39730950/javascript-disable-space-scrolling
+	return false;
+  }
 
   
 

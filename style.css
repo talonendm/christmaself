@@ -3,6 +3,8 @@ html, body {
   height: 100%;
   /* remove the extra whites around */
   margin: 0;
+  overflow: hidden;
+
 }
 #canvas {
   background-color: black;
