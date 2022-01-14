@@ -27,8 +27,8 @@ function preload() {
 
 
 function setup() {
-	// createCanvas(windowWidth, windowHeight);
-	cnv = createCanvas(windowHeight - 20, windowHeight - 20);
+	cnv = createCanvas(windowWidth, windowHeight);
+	// cnv = createCanvas(windowHeight - 20, windowHeight - 20);
     centerCanvas();
 	colorMode(HSB, 360, 100, 100);
 	rectMode(CENTER);
@@ -195,12 +195,15 @@ function centerCanvas() {
 	cnv.position(x, y);
 }
 
-
+/* full screening will change the size of the canvas */
 function windowResized() {
 	// resizeCanvas(windowWidth, windowHeight);
 	// https://github.com/processing/p5.js/wiki/Positioning-your-canvas
 	centerCanvas();
 }
+
+  
+
 function timeIt() {
 
 	timerValue++;
