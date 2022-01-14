@@ -326,11 +326,11 @@ function showtext() {
 		stroke('green');
 		fill('darkgreen');
 		textAlign(CENTER, CENTER);
-		textSize(140);
+		textSize(70);
 		text('SCORE: ' + points, width/2, height/2);
 
 		textAlign(CENTER, BOTTOM);
-		textSize(40);
+		textSize(30 + round(sin(frameCount/18)*6));
 		text('NEW GAME? ' + 'come here and wait', width/2, height-30);
 	}
 	
