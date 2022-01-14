@@ -11,7 +11,7 @@ var doublec2 = 0;
 var soundrestarted = 0;
 
 var mic;
-
+var cnv;
 
 var sx;
 var sy;
@@ -27,7 +27,9 @@ function preload() {
 
 
 function setup() {
-	createCanvas(windowWidth, windowHeight);
+	// createCanvas(windowWidth, windowHeight);
+	cnv = createCanvas(windowHeight - 20, windowHeight - 20);
+    centerCanvas();
 	colorMode(HSB, 360, 100, 100);
 	rectMode(CENTER);
 	setInterval(timeIt, 100); // https://editor.p5js.org/denaplesk2/sketches/ryIBFP_lG
@@ -187,8 +189,17 @@ function touchStarted() {
 
 
 
+function centerCanvas() {
+	var x = (windowWidth - width) / 2;
+	var y = (windowHeight - height) / 2;
+	cnv.position(x, y);
+}
+
+
 function windowResized() {
-	resizeCanvas(windowWidth, windowHeight);
+	// resizeCanvas(windowWidth, windowHeight);
+	// https://github.com/processing/p5.js/wiki/Positioning-your-canvas
+	centerCanvas();
 }
 function timeIt() {
 
