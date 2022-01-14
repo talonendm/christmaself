@@ -22,6 +22,7 @@ var cnv;
 var right_answer;
 var points;
 var health;
+let max_health = 1000;
 
 
 var sx;
@@ -36,6 +37,8 @@ var vx,vy;
 var showpic;
 var newgamecounter;
 
+
+let debuggaus = false; // true;
 
 let dudes = [];
 let laskut = [];
@@ -87,7 +90,7 @@ function nollaus() {
 
 	newgamecounter = 0;
 
-	health = 1000;
+	health = max_health;
 	points = 0;
 	alternative_formulas = 2;
 
@@ -116,7 +119,7 @@ function newFormulas(maara) {
 		while (okei) {
 			r1 = round(random(2, 9));
 			r2 = round(random(2, 9));
-			laskut[i] = new Matikka(r1, r2, round(random(okei_threshold/2,width - okei_threshold/2)),round(random(okei_threshold/2,height - okei_threshold/2)), r1*r2);
+			laskut[i] = new Matikka(r1, r2, round(random(okei_threshold/2,windowWidth - okei_threshold/2)),round(random(okei_threshold/2, windowHeight - okei_threshold/2)), r1*r2);
 			okei = laskut[i].isOver(dudes[0].x, dudes[0].y, okei_threshold);
 
 			// check: that no overlapping with math
@@ -226,7 +229,7 @@ function draw() {
 		laskut[i].overCheck(dudes[0].x, dudes[0].y);
 	}
 
-
+	if (debuggaus) {
     // https://discourse.processing.org/t/how-do-i-use-the-x-and-y-values-from-an-object-from-touches-in-p5js/31766/2
 	// check touches.length; draw line if there are at least 2 points
 	if (touches.length >= 1) {
@@ -252,7 +255,7 @@ function draw() {
 		noStroke();
 
 	}
-
+	}
 
 	
 	
@@ -264,6 +267,11 @@ function draw() {
 function showtext() {
 
 
+
+
+	if (debuggaus) {
+
+	
 	noStroke();
 	let ystep = 15;
 	fill(0, 0, 100);
@@ -289,6 +297,22 @@ function showtext() {
 	}
 
 
+	}
+
+
+	if (health<200) {
+		fill('red');
+	} else if (health<500) {
+		fill('brown');
+	} else {
+		fill('green');
+	}
+	
+	noStroke();
+	var health_bar = map(health, 0, max_health, 0, windowWidth);
+	rectMode(CORNERS);
+	rect(0,0,health_bar,10);
+
 	if (health>0) {
 		stroke('green');
 		fill('darkgreen');
@@ -299,12 +323,12 @@ function showtext() {
 		stroke('green');
 		fill('darkgreen');
 		textAlign(CENTER, CENTER);
-		textSize(170);
-		text('SCORE:' + points, width/2, height/2);
+		textSize(140);
+		text('SCORE: ' + points, width/2, height/2);
 
 		textAlign(CENTER, BOTTOM);
-		textSize(70);
-		text('NEW GAME?' + 'come here', width/2, height-30);
+		textSize(40);
+		text('NEW GAME? ' + 'come here and wait', width/2, height-30);
 	}
 	
 
@@ -376,7 +400,7 @@ class Matikka {
 		this.score = score_;
 		this.a = a_;
 		this.b = b_;
-		this.dist_threshold = 70;
+		this.dist_threshold = 40;
 		this.color = 'yellow';
 	}
 
@@ -384,7 +408,8 @@ class Matikka {
 		stroke(this.color);
 		fill(this.color);
 		strokeWeight(3);
-		textSize(45);
+		textAlign(CENTER,CENTER);
+		textSize(28);
 		text(this.a + "*" + this.b, this.x, this.y);
 	}
 
@@ -445,6 +470,7 @@ class Dude {
 		this.points = 0;
 		this.x = x_;
 		this.y = y_;
+		this.yscale = map(y_, 0, height, 0.4, 1);
 		this.vx = vx_;
 		this.vy = vy_;
 		this.ve0 = createVector(x_, y_);
@@ -452,6 +478,10 @@ class Dude {
 		this.ve2 = createVector(x_, y_);
 		this.angle = 0;
 		this.angle_prev = 0;
+
+		this.speedvector = createVector(vx_, vy_);
+		this.speedvector_prev = createVector(vx_, vy_);
+
 		this.speed = 0;
 		this.moving_count = 0;
 		this.brake_coefficient = 1;
@@ -461,13 +491,29 @@ class Dude {
 
 		// rotate(PI/180 * this.moving_count);
         push();
+
+		
+
 		translate(this.x, this.y);
 		rotate(PI/180 * sin(this.moving_count/5)/30 * this.speed*20);
 
+
+		if (this.vx>0) {
+			scale(-1, 1);
+		}
+
+		
+		scale(this.yscale, this.yscale);
+
+		if (newgamecounter>0) {
+			scale(newgamecounter/20 + 1, newgamecounter/20 + 1);
+		}
+
+
 		if (pic_number == 0)
-			image(img1); // image(img1, this.x, this.y); //, sy, 0, sz);
+			image(img1,0,0); // image(img1, this.x, this.y); //, sy, 0, sz);
 		else
-			image(img2); // image(img2, this.x, this.y); //, sy, 0, sz);
+			image(img2,0,0); // image(img2, this.x, this.y); //, sy, 0, sz);
 
 		
 		//	drawArrow(this.ve0, this.ve2, 'blue');
@@ -503,8 +549,7 @@ class Dude {
 		}
 		
 
-
-		this.angle_prev = this.angle;
+		
 
 		this.vx = this.speed * cos(this.angle);
 
@@ -522,12 +567,47 @@ class Dude {
 		//}
 		
 
+
+		this.speedvector = createVector(this.vx, this.vy);
+
+
+		// let v1 = this.speedvector;
+		let v2 = this.speedvector_prev;
+		
+
+		angleMode(DEGREES);
+
+		let angleb = this.speedvector.angleBetween(v2);
+		// angle is PI/2
+		//print(angleb);
+
+		// this.angle_prev = abs(v1.angleBetween(v2));
+
+		if (angleb>120) {
+			// this.vx = 0;
+			// this.vy = 0;
+			if (angleb>160) {
+				this.speed = 0;
+			} else {
+				this.speed = this.speed * 0.5;
+			}
+			print("JARRU");
+		}
+
+		angleMode(RADIANS);
+
+		// let angle = v1.angleBetween(v2);
+		// this.angle_prev = 
+
+
 	
-		this.x = this.x + this.vx;
+		this.x = this.x + this.vx * this.yscale;
+		this.y = this.y + this.vy * this.yscale;
 
 
+		this.yscale = map(this.y, 0, height, 0.4, 1);
 
-		this.y = this.y + this.vy;
+		this.speedvector_prev = this.speedvector;
 		
 
 		
