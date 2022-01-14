@@ -192,7 +192,9 @@ function touchStarted() {
 function centerCanvas() {
 	var x = (windowWidth - width) / 2;
 	var y = (windowHeight - height) / 2;
-	cnv.position(x, y);
+	// cnv.position(x, y);
+	cnv.position(0, 0);
+	cnv.style('z-index', '-1'); // https://www.youtube.com/watch?v=OIfEHD3KqCg
 }
 
 /* full screening will change the size of the canvas */
