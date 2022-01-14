@@ -25,6 +25,9 @@ var health;
 let max_health = 1000;
 
 
+var alternative_formulas;
+let alternative_formulas_max = 8;
+
 var sx;
 var sy;
 var sz;
@@ -112,14 +115,14 @@ function newFormulas(maara) {
 	var r2 = 0;
 
 	var okei;
-	var okei_threshold = 340;
+	let okei_threshold = 240;
 	for (var i = 0; i < maara; i ++) {
 		okei = true;
 
 		while (okei) {
 			r1 = round(random(2, 9));
 			r2 = round(random(2, 9));
-			laskut[i] = new Matikka(r1, r2, round(random(okei_threshold/2,windowWidth - okei_threshold/2)),round(random(okei_threshold/2, windowHeight - okei_threshold/2)), r1*r2);
+			laskut[i] = new Matikka(r1, r2, round(random(okei_threshold/3, windowWidth - okei_threshold/3)),round(random(okei_threshold/3, windowHeight - okei_threshold/3)), r1*r2);
 			okei = laskut[i].isOver(dudes[0].x, dudes[0].y, okei_threshold);
 
 			// check: that no overlapping with math
@@ -402,15 +405,23 @@ class Matikka {
 		this.b = b_;
 		this.dist_threshold = 40;
 		this.color = 'yellow';
+		this.colorback = 'blue';
+		this.size = 28;
 	}
 
 	show() {
-		stroke(this.color);
+		stroke(this.colorback);
 		fill(this.color);
-		strokeWeight(3);
+		strokeWeight(1);
 		textAlign(CENTER,CENTER);
-		textSize(28);
+		
+		if (this.color == 'red') {
+			textSize(this.size - 10);
+		} else {
+			textSize(this.size + round(sin(frameCount/18)*6));
+		}
 		text(this.a + "*" + this.b, this.x, this.y);
+		
 	}
 
 	overCheck(dx, dy) {
@@ -423,7 +434,7 @@ class Matikka {
 			
 			if (right_answer == this.score) {
 				this.color = 'green';
-				alternative_formulas = alternative_formulas + 1;
+				if (alternative_formulas<alternative_formulas_max) alternative_formulas = alternative_formulas + 1;
 				newFormulas(alternative_formulas);
 				points = points + 100;
 				health = health + 100;
@@ -506,7 +517,7 @@ class Dude {
 		scale(this.yscale, this.yscale);
 
 		if (newgamecounter>0) {
-			scale(newgamecounter/20 + 1, newgamecounter/20 + 1);
+			scale(newgamecounter/10 + 1, newgamecounter/10 + 1);
 		}
 
 
