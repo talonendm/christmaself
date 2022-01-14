@@ -9,6 +9,10 @@ var clicked = false, clickTimeout = 300;
 var clicks2 = 0;
 var doublec2 = 0;
 var soundrestarted = 0;
+var angle;
+
+var friction = 0.95;
+var speedthreshold = 0.01;
 
 var mic;
 var cnv;
@@ -17,6 +21,15 @@ var sx;
 var sy;
 var sz;
 
+var acc_run = 3;
+var acc_walk = 0.1;
+
+
+var vx,vy;
+var showpic;
+
+
+let dudes = [];
 
 
 let img1, img2;
@@ -43,23 +56,27 @@ function setup() {
 	sy = windowHeight / 2;
 	sz = sy / 2 + 10; // use 0 as the value for the wide or high parameter. For instance, to make the width of an image 150 pixels, and change the height using the same proportion, use resize(150, 0).
 
+	vx = 0;
+	vy = 0;
+	showpic = 0;
+
+	dudes[0] = new Dude(sx, sy, vx, vy);
+
+
 }
 
 // auto indect in vscode: shift-alt-f
 function draw() {
 	background(value, 10, 10);
-	rectMode(CENTER);
-	fill(200, 60, 90);
-	rect(width * 0.5, height * 0.5, 280, 72, 7);
-	fill(0, 0, 100);
-	textSize(27);
-	textAlign(CENTER, CENTER);
-	textFont('Avenir');
-	let permin = round(clicks * 600 / timerValue);
-	text('click: ' + clicks + " OR " + clicks2 + "TIME" + nfc(timerValue / 10, 1) + "\nperMin:" + permin, width * 0.5, height * 0.5 + 2);
-	text('touch move: ' + movec, width * 0.5, height * 0.35 + 2);
-	text('double: ' + doublec + " or " + doublec2, width * 0.5, height * 0.65 + 2);
-	text('end: ' + endclicks, width * 0.5, height * 0.8 + 2);
+	
+	//rectMode(CENTER);
+	//fill(200, 60, 90);
+	//rect(width * 0.5, height * 0.5, 280, 72, 7);
+
+
+	
+
+	showtext();
 
 	// if (getAudioContext().state !== 'running') {
 	// 	getAudioContext().resume();
@@ -85,13 +102,70 @@ function draw() {
 	// }
 	// text('level: ' + level, width * 0.2, height * 0.7 + 2);
 
-	if (sx % 2 == 0)
-		image(img1, sx,sy); //, sy, 0, sz);
-	else
-		image(img2, sx,sy); //, sy, 0, sz);
+
+	for (var i = dudes.length - 1; i >= 0; i--) {
+		dudes[i].move(showpic);
+	}
+
+
+
+	// if (sx % 2 == 0)
+    
+
+	for (var i = dudes.length - 1; i >= 0; i--) {
+		if (dudes[i].speed > speedthreshold)
+			showpic = (showpic + 1) % 2;
+		dudes[i].show(showpic);
+		dudes[i].speed = dudes[i].speed * friction;
+		if (dudes[i].speed < speedthreshold) dudes[i].speed = 0;
+	}
+
+
+
+	
+	
+
+}
+
+
+
+function showtext() {
+
+
+	let ystep = 15;
+	fill(0, 0, 100);
+	textSize(ystep-3);
+	textAlign(LEFT, TOP);
+	textFont('Avenir');
+	let permin = round(clicks * 600 / timerValue);
+	text('click: ' + clicks + " OR " + clicks2 + "TIME" + nfc(timerValue / 10, 1) + "\nperMin:" + permin, 5, ystep);
+	text('touch move: ' + movec, 5, ystep * 3);
+	text('double: ' + doublec + " or " + doublec2, 5, ystep * 4);
+	text('end: ' + endclicks, 5, ystep * 5);
+	text('angle:' + round(degrees(angle)), 5, 6*ystep); // https://p5js.org/reference/#/p5.Vector/heading
+	
+	for (var i = dudes.length - 1; i >= 0; i--) {
+		text('Speed:' + dudes[0].speed,  5+ 50 * i, 7*ystep);
+	}
 
 
 }
+
+// https://p5js.org/reference/#/p5.Vector/angleBetween
+// draw an arrow for a vector at a given base position
+function drawArrow(base, vec, myColor) {
+	push();
+	stroke(myColor);
+	strokeWeight(3);
+	fill(myColor);
+	translate(base.x, base.y);
+	line(0, 0, vec.x, vec.y);
+	rotate(vec.heading());
+	let arrowSize = 7;
+	translate(vec.mag() - arrowSize, 0);
+	triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+	pop();
+  }
 
 // TOUCH ------------------------------------------------------------
 // full screen: https://editor.p5js.org/slow_izzm/sketches/lgzf4tJk6
@@ -127,6 +201,85 @@ function touchStarted() {
 	}
 }
 
+
+class Dude {
+	constructor(x_, y_, vx_, vy_) {
+		this.size = 150;
+		this.points = 0;
+		this.x = x_;
+		this.y = y_;
+		this.vx = vx_;
+		this.vy = vy_;
+		this.ve0 = createVector(x_, y_);
+		this.ve1 = createVector(x_, 0);
+		this.ve2 = createVector(x_, y_);
+		this.angle = 0;
+		this.speed = 0;
+	}
+
+	show(pic_number) {
+		if (pic_number == 0)
+			image(img1, this.x, this.y); //, sy, 0, sz);
+		else
+			image(img2, this.x, this.y); //, sy, 0, sz);
+
+		
+		//	drawArrow(this.ve0, this.ve2, 'blue');
+
+	}
+
+	move() {
+
+		//angle = tan((mouseY-this.y)/(mouseX-this.x) );
+
+		
+		// let v1 = createVector(this.x, 0);
+
+
+		this.ve0 = createVector(this.x, this.y);
+
+		//drawArrow(this.ve0, this.ve1, 'red');
+	  
+		this.ve2 = createVector(mouseX - this.x, mouseY - this.y);
+		
+	  
+		//let angleBetween = ve1.angleBetween(v2);
+		// https://www.youtube.com/watch?v=oXwCVDXS2Lg
+		this.angle = this.ve2.heading();
+		angle = this.angle;
+
+		// if (mouseX != this.x) {
+			this.vx = this.speed * cos(this.angle);
+
+			this.vy = this.speed * sin(this.angle);
+
+		//} else {
+		//	this.vx = 0;
+		//	if (mouseY>this.y)
+		//		this.vy = 1;
+		//	else 
+		//		this.vy = -1;
+		//}
+		
+
+	
+		this.x = this.x + this.vx;
+
+
+
+		this.y = this.y + this.vy;
+		
+
+		
+
+	//sz = sy / 2 + 10;
+	//img1.resize(0, sz);
+	//img2.resize(0, sz);
+
+	}
+
+}
+
 function touchEnded() {
 	value = 50;
 	// Clean code and post answer here: https://github.com/processing/p5.js/issues/1815
@@ -135,7 +288,14 @@ function touchEnded() {
 	if (event.type != 'mouseup') { // nicolasbaez commented 20 days ago at https://github.com/processing/p5.js/issues/1815
 		//your code :)
 
+
+        //GetDirection();
+
 		endclicks = endclicks + 1;
+
+
+		dudes[0].speed = dudes[0].speed + acc_run;
+
 	}
 
 
@@ -143,27 +303,9 @@ function touchEnded() {
 // TOUCH MOVED ------------------------------------------------------
 function touchMoved() {
 	movec = movec + 1;
+   
 
-
-	if (mouseX > sx)
-		sx = sx + 1;
-	else
-		sx = sx - 1;
-
-
-
-	if (mouseY > sy) {
-		sy = sy + 1;
-	}
-
-	else {
-		sy = sy - 1;
-	}
-
-
-	sz = sy / 2 + 10;
-	//img1.resize(0, sz);
-	//img2.resize(0, sz);
+	dudes[0].speed = dudes[0].speed + acc_walk;
 
 }
 
