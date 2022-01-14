@@ -10,6 +10,7 @@ var clicks2 = 0;
 var doublec2 = 0;
 var soundrestarted = 0;
 var angle;
+var moving_count = 0;
 
 var friction = 0.95;
 var speedthreshold = 0.01;
@@ -113,13 +114,36 @@ function draw() {
     
 
 	for (var i = dudes.length - 1; i >= 0; i--) {
-		if (dudes[i].speed > speedthreshold)
-			showpic = (showpic + 1) % 2;
+		if (dudes[i].speed > speedthreshold) {
+			
+			dudes[i].moving_count = dudes[i].moving_count + 1;
+
+			if (dudes[i].speed > 3) {
+				showpic = round(dudes[i].moving_count / 10) % 2;
+			}
+
+
+		}
 		dudes[i].show(showpic);
 		dudes[i].speed = dudes[i].speed * friction;
 		if (dudes[i].speed < speedthreshold) dudes[i].speed = 0;
 	}
 
+
+    // https://discourse.processing.org/t/how-do-i-use-the-x-and-y-values-from-an-object-from-touches-in-p5js/31766/2
+	// check touches.length; draw line if there are at least 2 points
+	if (touches.length >= 1) {
+
+		if (touches.length >= 2) {
+			line(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+		}
+
+		for (var i = 0; i < touches.length; i++) {
+			fill
+			text(i + 1, touches[i].x, touches[i].y);
+		}
+
+	}
 
 
 	
@@ -143,9 +167,11 @@ function showtext() {
 	text('double: ' + doublec + " or " + doublec2, 5, ystep * 4);
 	text('end: ' + endclicks, 5, ystep * 5);
 	text('angle:' + round(degrees(angle)), 5, 6*ystep); // https://p5js.org/reference/#/p5.Vector/heading
+	text('touches.length: ' + touches.length, 5, ystep * 7);
 	
+
 	for (var i = dudes.length - 1; i >= 0; i--) {
-		text('Speed:' + dudes[0].speed,  5+ 50 * i, 7*ystep);
+		text('Speed:' + dudes[0].speed,  5+ 50 * i, 10*ystep);
 	}
 
 
@@ -215,13 +241,20 @@ class Dude {
 		this.ve2 = createVector(x_, y_);
 		this.angle = 0;
 		this.speed = 0;
+		this.moving_count = 0;
 	}
 
 	show(pic_number) {
+
+		// rotate(PI/180 * this.moving_count);
+
+		translate(this.x, this.y);
+		rotate(PI/180 * sin(this.moving_count/5)/30 * this.speed*20);
+
 		if (pic_number == 0)
-			image(img1, this.x, this.y); //, sy, 0, sz);
+			image(img1); // image(img1, this.x, this.y); //, sy, 0, sz);
 		else
-			image(img2, this.x, this.y); //, sy, 0, sz);
+			image(img2); // image(img2, this.x, this.y); //, sy, 0, sz);
 
 		
 		//	drawArrow(this.ve0, this.ve2, 'blue');
