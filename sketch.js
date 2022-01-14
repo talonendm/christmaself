@@ -12,8 +12,8 @@ var soundrestarted = 0;
 var angle;
 var moving_count = 0;
 
-var friction = 0.95;
-var speedthreshold = 0.01;
+var friction = 0.97;
+var speedthreshold = 0.02;
 
 var mic;
 var cnv;
@@ -31,6 +31,7 @@ var showpic;
 
 
 let dudes = [];
+let laskut = [];
 
 
 let img1, img2;
@@ -62,6 +63,9 @@ function setup() {
 	showpic = 0;
 
 	dudes[0] = new Dude(sx, sy, vx, vy);
+
+
+	laskut[0] = new Matikka(4,6,100,200,4*6);
 
 
 }
@@ -118,7 +122,7 @@ function draw() {
 			
 			dudes[i].moving_count = dudes[i].moving_count + 1;
 
-			if (dudes[i].speed > 3) {
+			if (dudes[i].speed > 2) {
 				showpic = round(dudes[i].moving_count / 10) % 2;
 			}
 
@@ -130,18 +134,35 @@ function draw() {
 	}
 
 
+	for (var i = dudes.length - 1; i >= 0; i--) {
+		laskut[i].show();
+		laskut[i].overCheck(dudes[0].x, dudes[0].y);
+	}
+
+
     // https://discourse.processing.org/t/how-do-i-use-the-x-and-y-values-from-an-object-from-touches-in-p5js/31766/2
 	// check touches.length; draw line if there are at least 2 points
 	if (touches.length >= 1) {
 
+
+		stroke(0,0,255);
+		strokeWeight(3);
+
 		if (touches.length >= 2) {
+			
+			push();
 			line(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+			pop();
 		}
 
 		for (var i = 0; i < touches.length; i++) {
-			fill
+			fill(255,255,0);
+			textSize(30);
 			text(i + 1, touches[i].x, touches[i].y);
 		}
+
+
+		noStroke();
 
 	}
 
@@ -156,6 +177,7 @@ function draw() {
 function showtext() {
 
 
+	noStroke();
 	let ystep = 15;
 	fill(0, 0, 100);
 	textSize(ystep-3);
@@ -172,6 +194,8 @@ function showtext() {
 
 	for (var i = dudes.length - 1; i >= 0; i--) {
 		text('Speed:' + dudes[0].speed,  5+ 50 * i, 10*ystep);
+		text('this.brake_coefficient:' + dudes[0].brake_coefficient,  5+ 50 * i, 11*ystep);
+		
 	}
 
 
@@ -228,6 +252,39 @@ function touchStarted() {
 }
 
 
+
+
+class Matikka {
+	constructor(a_, b_, x_, y_, score_) {
+		this.x = x_;
+		this.y = y_;
+		this.score = score_;
+		this.a = a_;
+		this.b = b_;
+		this.dist_threshold = 70;
+		this.color = 'red';
+	}
+
+	show() {
+		stroke(this.color);
+		fill(this.color);
+		strokeWeight(3);
+		textSize(45);
+		text(this.a + "*" + this.b, this.x, this.y);
+	}
+
+	overCheck(dx, dy) {
+
+		var dist2number = dist(dx,dy, this.x, this.y);
+		if (dist2number < this.dist_threshold) {
+			text("!", width/2, height/2);
+			this.color = 'green';
+		}
+
+	}
+}
+
+
 class Dude {
 	constructor(x_, y_, vx_, vy_) {
 		this.size = 150;
@@ -240,14 +297,16 @@ class Dude {
 		this.ve1 = createVector(x_, 0);
 		this.ve2 = createVector(x_, y_);
 		this.angle = 0;
+		this.angle_prev = 0;
 		this.speed = 0;
 		this.moving_count = 0;
+		this.brake_coefficient = 1;
 	}
 
 	show(pic_number) {
 
 		// rotate(PI/180 * this.moving_count);
-
+        push();
 		translate(this.x, this.y);
 		rotate(PI/180 * sin(this.moving_count/5)/30 * this.speed*20);
 
@@ -258,7 +317,7 @@ class Dude {
 
 		
 		//	drawArrow(this.ve0, this.ve2, 'blue');
-
+        pop();
 	}
 
 	move() {
@@ -282,9 +341,23 @@ class Dude {
 		angle = this.angle;
 
 		// if (mouseX != this.x) {
-			this.vx = this.speed * cos(this.angle);
 
-			this.vy = this.speed * sin(this.angle);
+		if (this.speed>0) {
+			this.brake_coefficient = cos(this.angle) * this.vx / this.speed + sin(this.angle) * this.vy / this.speed;
+		} else {
+			this.brake_coefficient = 1;
+		}
+		
+
+
+		this.angle_prev = this.angle;
+
+		this.vx = this.speed * cos(this.angle);
+
+		this.vy = this.speed * sin(this.angle);
+
+        
+
 
 		//} else {
 		//	this.vx = 0;
@@ -329,6 +402,8 @@ function touchEnded() {
 
 		dudes[0].speed = dudes[0].speed + acc_run;
 
+		// dudes[0].speed = dudes[0].speed * dudes[0].brake_coefficient;  // if opposite direction
+
 	}
 
 
@@ -339,6 +414,8 @@ function touchMoved() {
    
 
 	dudes[0].speed = dudes[0].speed + acc_walk;
+
+	// dudes[0].speed = dudes[0].speed * dudes[0].brake_coefficient;  // if opposite direction
 
 }
 
