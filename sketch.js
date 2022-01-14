@@ -18,6 +18,12 @@ var speedthreshold = 0.02;
 var mic;
 var cnv;
 
+
+var right_answer;
+var points;
+var health;
+
+
 var sx;
 var sy;
 var sz;
@@ -28,6 +34,7 @@ var acc_walk = 0.1;
 
 var vx,vy;
 var showpic;
+var newgamecounter;
 
 
 let dudes = [];
@@ -54,6 +61,20 @@ function setup() {
 	imageMode(CENTER);
 	noStroke();
 
+	nollaus();
+	
+
+	
+
+	
+	
+
+}
+
+
+
+function nollaus() {
+
 	sx = windowWidth / 2;
 	sy = windowHeight / 2;
 	sz = sy / 2 + 10; // use 0 as the value for the wide or high parameter. For instance, to make the width of an image 150 pixels, and change the height using the same proportion, use resize(150, 0).
@@ -64,11 +85,58 @@ function setup() {
 
 	dudes[0] = new Dude(sx, sy, vx, vy);
 
+	newgamecounter = 0;
 
-	laskut[0] = new Matikka(4,6,100,200,4*6);
+	health = 1000;
+	points = 0;
+	alternative_formulas = 2;
+
+	newFormulas(alternative_formulas);
 
 
 }
+
+
+function newFormulas(maara) {
+
+
+	for (var i = laskut.length - 1; i >= 0; i--) {
+		laskut.pop();
+	}
+
+
+	var r1 = 0;
+	var r2 = 0;
+
+	var okei;
+	var okei_threshold = 340;
+	for (var i = 0; i < maara; i ++) {
+		okei = true;
+
+		while (okei) {
+			r1 = round(random(2, 9));
+			r2 = round(random(2, 9));
+			laskut[i] = new Matikka(r1, r2, round(random(okei_threshold/2,width - okei_threshold/2)),round(random(okei_threshold/2,height - okei_threshold/2)), r1*r2);
+			okei = laskut[i].isOver(dudes[0].x, dudes[0].y, okei_threshold);
+
+			// check: that no overlapping with math
+			if (i>0) {
+				for (var j = 0; j < i; j ++) {
+					if (laskut[i].isOver(laskut[j].x, laskut[j].y, okei_threshold)) {
+						okei = true;
+					}
+				}
+			} else {
+				right_answer = laskut[i].score;
+			}
+			
+
+		}
+	}
+
+}
+
+
 
 // auto indect in vscode: shift-alt-f
 function draw() {
@@ -78,8 +146,27 @@ function draw() {
 	//fill(200, 60, 90);
 	//rect(width * 0.5, height * 0.5, 280, 72, 7);
 
-
+	health = health - 1;
 	
+	if (health<0) {
+		//health
+		newFormulas(0);
+		health = 0;
+
+	}
+
+
+
+	if (health == 0) {
+
+
+		if (dudes[0].y> height-100) {
+			newgamecounter = newgamecounter + 1;
+		}
+
+		if (newgamecounter>100) nollaus();
+
+	}
 
 	showtext();
 
@@ -134,7 +221,7 @@ function draw() {
 	}
 
 
-	for (var i = dudes.length - 1; i >= 0; i--) {
+	for (var i = laskut.length - 1; i >= 0; i--) {
 		laskut[i].show();
 		laskut[i].overCheck(dudes[0].x, dudes[0].y);
 	}
@@ -190,16 +277,44 @@ function showtext() {
 	text('end: ' + endclicks, 5, ystep * 5);
 	text('angle:' + round(degrees(angle)), 5, 6*ystep); // https://p5js.org/reference/#/p5.Vector/heading
 	text('touches.length: ' + touches.length, 5, ystep * 7);
+	text('POINTS: ' + points, 5, ystep * 8);
+	text('HEALTH: ' + health, 5, ystep * 9);
+	text('newgamecounter: ' + newgamecounter, 5, ystep * 10);
 	
 
 	for (var i = dudes.length - 1; i >= 0; i--) {
-		text('Speed:' + dudes[0].speed,  5+ 50 * i, 10*ystep);
-		text('this.brake_coefficient:' + dudes[0].brake_coefficient,  5+ 50 * i, 11*ystep);
+		text('Speed100:' + round(100*dudes[0].speed),  5+ 50 * i, 13*ystep);
+		text('this.brake_coefficient:' + dudes[0].brake_coefficient,  5+ 50 * i, 14*ystep);
 		
 	}
 
 
+	if (health>0) {
+		stroke('green');
+		fill('darkgreen');
+		textAlign(RIGHT, TOP);
+		textSize(130);
+		text('=' + right_answer, width-5, 5);
+	} else {
+		stroke('green');
+		fill('darkgreen');
+		textAlign(CENTER, CENTER);
+		textSize(170);
+		text('SCORE:' + points, width/2, height/2);
+
+		textAlign(CENTER, BOTTOM);
+		textSize(70);
+		text('NEW GAME?' + 'come here', width/2, height-30);
+	}
+	
+
+
+
 }
+
+
+
+
 
 // https://p5js.org/reference/#/p5.Vector/angleBetween
 // draw an arrow for a vector at a given base position
@@ -262,7 +377,7 @@ class Matikka {
 		this.a = a_;
 		this.b = b_;
 		this.dist_threshold = 70;
-		this.color = 'red';
+		this.color = 'yellow';
 	}
 
 	show() {
@@ -275,13 +390,52 @@ class Matikka {
 
 	overCheck(dx, dy) {
 
-		var dist2number = dist(dx,dy, this.x, this.y);
-		if (dist2number < this.dist_threshold) {
+		// var dist2number = dist(dx, dy, this.x, this.y);
+		if (this.isOver(dx, dy, this.dist_threshold)) {
+		//if (dist2number < this.dist_threshold) {
 			text("!", width/2, height/2);
-			this.color = 'green';
+			
+			
+			if (right_answer == this.score) {
+				this.color = 'green';
+				alternative_formulas = alternative_formulas + 1;
+				newFormulas(alternative_formulas);
+				points = points + 100;
+				health = health + 100;
+				
+			} else {
+
+				if (this.color == 'red') {
+					points = points - 1;
+				} else {
+					this.color = 'red';
+					points = points - 20;
+
+				}
+
+				
+				
+			}
+			
+
+
+			
+
 		}
 
 	}
+
+	isOver = function(dx, dy, threshold) {
+		var dist2number = dist(dx,dy, this.x, this.y);
+		if (dist2number < this.dist_threshold) {
+			return(true);
+		} else {
+			return(false);
+		}
+		
+
+	}
+
 }
 
 
