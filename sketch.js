@@ -49,8 +49,18 @@ let laskut = [];
 
 let img1, img2;
 function preload() {
-	img1 = loadImage('pics/sx/s1.png');
-	img2 = loadImage('pics/sx/s2.png');
+
+	var prutus = true;
+
+	if (prutus) {
+		img1 = loadImage('pics/hahmot/prutus1.jpg');
+		img2 = loadImage('pics/hahmot/prutus2.jpg');
+	} else {
+		img1 = loadImage('pics/sx/s1.png');
+		img2 = loadImage('pics/sx/s2.png');
+	}
+
+	
 }
 
 
