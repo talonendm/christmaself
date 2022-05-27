@@ -53,8 +53,8 @@ function preload() {
 	var prutus = true;
 
 	if (prutus) {
-		img1 = loadImage('pics/hahmot/prutus1.jpg');
-		img2 = loadImage('pics/hahmot/prutus2.jpg');
+		img1 = loadImage('pics/hahmot/prutus1.png');
+		img2 = loadImage('pics/hahmot/prutus2.png');
 	} else {
 		img1 = loadImage('pics/sx/s1.png');
 		img2 = loadImage('pics/sx/s2.png');
