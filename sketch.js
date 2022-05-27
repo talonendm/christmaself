@@ -50,7 +50,15 @@ let laskut = [];
 let img1, img2;
 function preload() {
 
-	var prutus = true;
+
+	let hahmorandom = random(50);
+	var prutus; // = true;
+	if (hahmorandom > 20) {
+		prutus = true;
+	} else {
+		prutus = false;
+	}
+
 
 	if (prutus) {
 		img1 = loadImage('pics/hahmot/prutus1.png');
